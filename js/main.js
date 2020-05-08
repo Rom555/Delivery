@@ -26,6 +26,18 @@ let login = localStorage.getItem('login');
 
 const cart = [];
 
+const loadCart = function (){
+  if (localStorage.getItem(login)) {
+    JSON.parse(localStorage.getItem(login)).forEach(function(item) {
+      cart.push(item);
+    });
+  }
+}
+
+const saveCart = function() {
+  localStorage.setItem(login, JSON.stringify(cart));
+}
+
 const getData = async function(url) {
   const response = await fetch(url);
 
@@ -54,6 +66,7 @@ function authorized() {
 
   function logOut() {
     login = null;
+    cart.length = 0;
     localStorage.removeItem('login');
 
     buttonAuth.style.display = '';
@@ -69,6 +82,7 @@ function authorized() {
 
   cardsRestaurants.addEventListener('click', openGoods);
   buttonOut.addEventListener('click', logOut);
+  loadCart();
 }
 function notAuthorized(){
   function logIn(event){
@@ -215,6 +229,7 @@ function addToCart(event) {
         count:1
       });
     }
+    saveCart();
   }
 
 }
@@ -260,8 +275,9 @@ function changeCount(event) {
     }
     if (target.classList.contains('counter-plus')) food.count++;
     renderCart();
+    saveCart();
   }
-};
+}
 
 function init() {
   getData('./db/partners.json').then(function(data) {
@@ -292,6 +308,12 @@ function init() {
   cardsMenu.addEventListener('click', addToCart);
   
   checkAuth();
+  loadCart();
+
+  new Swiper('.swiper-container', {
+    loop: true,
+    autoplay: true
+  });
 };
 
 init();
